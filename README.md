@@ -1,59 +1,75 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Kaon Ta! Davao Cañada's Food Guide
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Name:** Rainzy Belle Cañada  
+**Course:** 4-334 CS Elective 2 – Full-Stack Development (Laravel)  
 
-## About Laravel
+A Davao City carinderia and eatery guide built with Laravel 12, SQLite, Blade components, and Tailwind CSS via Vite.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Setup & Run Instructions
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+touch database/database.sqlite
+php artisan migrate:fresh --seed
+npm install
+npm run build
+php artisan serve
+# or npm run dev while developing
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Personalized Seed Data
 
-## Learning Laravel
+* **Districts (6):** Poblacion, Talomo, Agdao, Buhangin, Toril, Tugbok
+* **Features (6):** Suki ni Cañada, Budget Meal, Halal, Open 24 Hours, Aircon, Unli Sabaw
+* **Seeded Users (12 total):**
+  * `Rainzy Cañada` (`canada@kaonta.test` / password: `kaonta2026`)
+  * `Tita Cañada` (`tita.canada@kaonta.test` / password: `kaonta2026`)
+  * Plus 10 factory resident users
+* **Hand-Made Eatery:**
+  * **Name:** Carinderia ni Cañada (`slug`: `carinderia-ni-canada`)
+  * **District & Address:** Poblacion — San Pedro St., Poblacion, Davao City
+  * **Business Permit:** `DVO-2026-0812` (Expires on `2027-08-12`)
+  * **Dishes:** Tinolang Manok (₱85.00, Bestseller), Kinilaw na Tuna (₱120.00), Durian Shake (₱75.00)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Eloquent Relationships
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Relationship | Type | Why This Type Fits |
+| :--- | :--- | :--- |
+| **District → Eatery** | `hasMany` / `belongsTo` | One Davao district contains many carinderias, while each carinderia belongs to a single district. |
+| **Eatery → Dish** | `hasMany` / `belongsTo` | An eatery serves multiple menu dishes, and each dish belongs to the specific eatery that offers it. |
+| **Eatery → Review** | `hasMany` / `belongsTo` | Residents can post many reviews on an eatery, and every review belongs to one target eatery. |
+| **User → Review** | `hasMany` / `belongsTo` | A single resident user can write many reviews across the guide, while each review belongs to one author. |
+| **Eatery → Permit** | `hasOne` / `belongsTo` | Each eatery holds exactly one official business permit, and each permit belongs to one specific eatery. |
+| **Eatery ↔ Feature** | `belongsToMany` | An eatery can have multiple tags like Halal or Budget Meal, and each feature applies to many eateries through `eatery_feature`. |
+| **District → Review** | `hasManyThrough` | A district collects all reviews written for the eateries located within it by traversing through the `eateries` table. |
 
-## Laravel Sponsors
+## Route List (`php artisan route:list --except-vendor`)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```text
+  GET|HEAD        / ........................................................................ home › HomeController
+  GET|HEAD        districts ................................................ districts.index › DistrictController@index
+  GET|HEAD        districts/{district} ....................................... districts.show › DistrictController@show
+  GET|HEAD        eateries ................................................... eateries.index › EateryController@index
+  POST            eateries ................................................... eateries.store › EateryController@store
+  GET|HEAD        eateries/create .......................................... eateries.create › EateryController@create
+  GET|HEAD        eateries/{eatery} ............................................ eateries.show › EateryController@show
+  PUT|PATCH       eateries/{eatery} ........................................ eateries.update › EateryController@update
+  DELETE          eateries/{eatery} ...................................... eateries.destroy › EateryController@destroy
+  GET|HEAD        eateries/{eatery}/edit ....................................... eateries.edit › EateryController@edit
+  POST            eateries/{eatery}/reviews .......................... eateries.reviews.store › ReviewController@store
+  GET|HEAD        reviewers/{user} .......................................... reviewers.show › ReviewerController@show
+  DELETE          reviews/{review} ........................................ reviews.destroy › ReviewController@destroy
+```
 
-### Premium Partners
+## Screenshots
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 1. Eatery List & Filters
+![Eatery List](screenshots/eatery-list.png)
 
-## Contributing
+### 2. Eatery Page with Reviews
+![Eatery Show Page](screenshots/eatery-show.png)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 3. Create Eatery Validation Errors
+![Create Form Validation](screenshots/create-validation.png)
